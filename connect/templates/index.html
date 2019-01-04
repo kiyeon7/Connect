@@ -1,0 +1,107 @@
+<!--
+Kiyeon Lee
+11/19/2018
+CS50 Final Project: Connect
+-->
+
+{% extends "layout.html" %}
+
+{% block title %}
+    Homepage
+{% endblock %}
+
+{% block main %}
+    <!--Title text-->
+    <h1 id="connect">Connect</h1>
+    <p>Make new friends and learn</p>
+
+    <!--Table design-->
+    <div class="table-responsive" style="background-color: white">
+    <table class="table table-striped">
+        <thead>
+        <h4 id="chat">Let's Chat</h4>
+            <tr>
+                <!--Table header columns-->
+                <th scope="col">Name*</th>
+                <th scope="col">Time Leaving*</th>
+                <th scope="col">Location/My Description</th>
+                <th scope="col">Interests</th>
+            </tr>
+            <tr>
+                <form action="/" method="post" name="form">
+                    <div class = "form-row">
+                      <br><br>
+                      <!--If editing, auto-prefill previous values for user's convenience-->
+                      {% if prefill %}
+                          <td scope="row"><input class="form-control" type="text" name="name" value= {{ prefill['name']|string }} maxlength="30" required></td>
+                          <td><input class="form-control" type="time" name="time" value= {{ prefill['time']|string }} required></td>
+                          <td><input class="form-control" type="text" name="location" value= {{ prefill['location'] }} maxlength="30"></td>
+                          <td><input class="form-control" type="text" name="interests" value= {{ prefill['interests'] }} maxlength="100" textarea rows="4" cols="50"></td>
+                          <td><input class="btn btn-primary" type="submit" value="Submit"></td>
+                      <!--For normal submissions, no pre-fills-->
+                      {% else %}
+                          <!--Form with blanks-->
+                          <!--Name is required and limited to 30 characters-->
+                          <td scope="row"><input class="form-control"  type="text" name="name" maxlength="30" required></td>
+                          <!--By default, show one hour ahead of current time-->
+                          <td><input class="form-control" type="time" name="time" value={{ showtime }} required></td>
+                          <td><input class="form-control" type="text" name="location" maxlength="30"></td>
+                          <td><input class="form-control" type="text" name="interests" maxlength="100" textarea rows="4" cols="50"></td>
+                          <!--Submit button-->
+                          <td><input class="btn btn-primary" type="submit" value="Submit"></td>
+                      {% endif %}
+                    </div>
+                </form>
+            </tr>
+        </thead>
+        <tbody>
+            <!--Display user's information in list-->
+            {% for student in rows %}
+                <tr>
+                    <!--Call info from database as defined in python using jinja-->
+                    <td scope="row">{{ student['name'] }}</td>
+                    <td>{{ student['time'] }}</td>
+                    <td>{{ student['location'] }}</td>
+                    <td>{{ student['interests'] }}</td>
+                    <!--Edit and Delete buttons for each particular user-->
+                    <td><a href = {{ "/edit/" + student['id']|string }}>Edit</a>/<a href = {{ "/delete/" + student['id']|string }}>Delete</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+    <script>
+       document.querySelector('form').onsubmit = function(e) {
+            // Ensure that user's inputted time is after current time via javascript
+            // Declare time variables to properly format submitted time (change a string value to a time value) and compare it to current time
+            var now = new Date();
+            var datestring = now.toDateString();
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+
+            if(dd<10)
+            {
+                dd='0'+dd
+            }
+            if(mm<10)
+            {
+                mm='0'+mm
+            }
+            var today = mm+'/'+dd+'/'+yyyy;
+
+            var usertime = document.getElementsByName("time")[0].value + ":00";
+            var submitted = new Date(today + " " + usertime);
+
+            // If user's submitted time is less than now (current time), then prevent submission
+            if (submitted <= now){
+                alert("Please enter a time later than now");
+                e.preventDefault();
+                return false;
+            }
+    };
+    </script>
+
+{% endblock %}
