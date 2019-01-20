@@ -38,6 +38,8 @@ Session(app)
 db = SQL("postgres://oxrzgukfhlkdxn:c8bdba933daf90ba9933e69d81c7c41948e86b5719bc3a3e0a3bcacd35e6f789@ec2-54-235-77-0.compute-1.amazonaws.com:5432/d582r814ff2gbp
 ")
 
+#db = SQL("sqlite:///connect.db")
+
 # Convert a string value to a time value
 def convert(timeString):
     time = timeString.split(":")
